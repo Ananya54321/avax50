@@ -52,13 +52,13 @@ const Navbar = () => {
   const tradingItems = navigationItems.filter(item => item.section === 'trading')
 
   return (
-    <div className='h-full flex flex-col bg-black text-white overflow-hidden border-r border-gray-800'>
+    <div className='h-full flex flex-col bg-black text-white overflow-hidden border-r border-gray-700'>
 
       {/* Navigation */}
       <nav className='flex-1 px-4 py-6 space-y-8 mt-4'>
         {/* Main Section */}
         <div className=' pb-8 border-b border-gray-700'>
-          <h3 className='px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3'>
+          <h3 className='px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3'>
             Overview
           </h3>
           <div className='space-y-1'>
@@ -72,13 +72,13 @@ const Navbar = () => {
                   className={`flex items-center sidebarfont px-3 py-2 text-lg font-semibold rounded-lg transition-all duration-200 group ${
                     isActive 
                       ? 'bg-red-800 text-white border-l-4 border-red-400' 
-                      : 'hover:bg-gray-800 hover:text-white'
+                      : 'hover:bg-accent hover:text-accent-foreground'
                   }`}
                 >
                   <Icon className={`h-5 w-5 mr-3 transition-colors ${
                     isActive 
                       ? 'text-red-300' 
-                      : 'text-gray-400 group-hover:text-red-400'
+                      : 'text-muted-foreground group-hover:text-red-400'
                   }`} />
                   <span>{item.name}</span>
                 </Link>
@@ -90,7 +90,7 @@ const Navbar = () => {
 
         {/* Trading Section */}
         <div>
-          <h3 className='px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3'>
+          <h3 className='px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3'>
             Trading
           </h3>
           <div className='space-y-1'>
@@ -104,13 +104,13 @@ const Navbar = () => {
                   className={`flex items-center sidebarfont px-3 py-2 text-lg font-semibold rounded-lg transition-all duration-200 group ${
                     isActive 
                       ? 'bg-red-800 text-white border-l-4 border-red-400' 
-                      : 'hover:bg-gray-800 hover:text-white'
+                      : 'hover:bg-accent hover:text-accent-foreground'
                   }`}
                 >
                   <Icon className={`h-5 w-5 mr-3 transition-colors ${
                     isActive 
                       ? 'text-red-300' 
-                      : 'text-gray-400 group-hover:text-red-400'
+                      : 'text-muted-foreground group-hover:text-red-400'
                   }`} />
                   <span>{item.name}</span>
                 </Link>
@@ -121,8 +121,8 @@ const Navbar = () => {
       </nav>
 
       {/* Footer */}
-      <div className='p-4 border-t border-gray-800'>
-        <div className='text-xs text-gray-500 text-center'>
+      <div className='p-4 border-t border-gray-700'>
+        <div className='text-xs text-muted-foreground text-center'>
           v1.0.0
         </div>
       </div>

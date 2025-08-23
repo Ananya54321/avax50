@@ -1,25 +1,22 @@
 "use client";
+import {
+  AwesomeButtonProgress,
+} from 'react-awesome-button';
 
 import { useEffect, useState } from "react";
 
 import axios from "axios";
 import tokens from "@/utils/tokens";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThirdwebProvider, useActiveAccount } from "thirdweb/react";
 import { prepareTransaction } from "thirdweb";
 import { sendAndConfirmTransaction } from "thirdweb";
 import { useWalletBalance } from "thirdweb/react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+// Removed Card imports - using custom styled divs instead
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { TransactionHistory, Transaction } from "@/components/feature/TransactionHistory";
 
 import { toast } from "sonner";
 
@@ -39,6 +36,8 @@ const Page = () => {
   const [currentTokenIndex, setCurrentTokenIndex] = useState(0);
   const [transferredTokens, setTransferredTokens] = useState<string[]>([]);
   const [failedTokens, setFailedTokens] = useState<string[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
   const account = useActiveAccount();
   const { data, isLoading, isError } = useWalletBalance({
     chain: defineChain(chainId),
@@ -84,6 +83,7 @@ const Page = () => {
       return;
     }
 
+    setIsProcessing(true);
     setTransferProgress(0);
     setCurrentTokenIndex(0);
     setTransferredTokens([]);
@@ -140,6 +140,16 @@ const Page = () => {
             account: wallet,
           });
 
+          // Add successful transaction to the list
+          const newTransaction: Transaction = {
+            id: `${Date.now()}-${i}`,
+            tokenSymbol: token.symbol,
+            transactionHash,
+            timestamp: new Date(),
+            status: "success",
+          };
+          setTransactions((prev) => [...prev, newTransaction]);
+
           setTransferredTokens((prev) => [...prev, token.symbol]);
           setTransferProgress(((i + 1) / tokens.length) * 100);
           console.log(`✅ Transferred ${token.symbol}: ${transactionHash}`);
@@ -156,6 +166,7 @@ const Page = () => {
       console.error(err);
       toast.error("Error buying basket");
     } finally {
+      setIsProcessing(false);
     }
   }
 
@@ -167,16 +178,17 @@ const Page = () => {
     <ThirdwebProvider>
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-2xl mx-auto space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold">
+          {/* Header Section */}
+          <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold">
                 Token50 Basket
-              </CardTitle>
-              <CardDescription>
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
                 Exchange AVAX for a diversified basket of 50 tokens
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              </p>
+            </div>
+            <div className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="avax-input" className="text-sm font-medium">
@@ -198,28 +210,28 @@ const Page = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="p-4">
+                  <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-4">
                     <div className="text-sm text-muted-foreground">
                       USD Value
                     </div>
                     <div className="text-2xl font-bold text-green-600">
                       ${usdAmount.toFixed(2)}
                     </div>
-                  </Card>
-                  <Card className="p-4">
+                  </div>
+                  <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-4">
                     <div className="text-sm text-muted-foreground">
                       Available Balance
                     </div>
                     <div className="text-2xl font-bold">
                       {balance.toFixed(4)} AVAX
                     </div>
-                  </Card>
+                  </div>
                 </div>
               </div>
 
               <Separator />
 
-              {isLoading && (
+              {isProcessing && (
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
@@ -234,7 +246,7 @@ const Page = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="p-4">
+                    <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-4">
                       <div className="text-sm text-muted-foreground">
                         Successful
                       </div>
@@ -257,8 +269,8 @@ const Page = () => {
                           </Badge>
                         )}
                       </div>
-                    </Card>
-                    <Card className="p-4">
+                    </div>
+                    <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-4">
                       <div className="text-sm text-muted-foreground">
                         Failed
                       </div>
@@ -281,33 +293,36 @@ const Page = () => {
                           </Badge>
                         )}
                       </div>
-                    </Card>
+                    </div>
                   </div>
                 </div>
               )}
 
-              <Button
+              <button
                 onClick={buyBasket}
-                disabled={isLoading || avaxAmount <= 0 || avaxAmount > balance}
-                className="w-full h-12 text-lg font-semibold"
+                disabled={isProcessing || avaxAmount <= 0 || avaxAmount > balance}
+                className="w-full h-12 text-lg bg-red-800 font-semibold"
               >
-                {isLoading ? (
+                {isProcessing ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-1 border-gray-700 border-t-transparent rounded-full animate-spin" />
                     Processing Transfer...
                   </div>
                 ) : (
                   "Buy Token Basket"
                 )}
-              </Button>
+              </button>
 
-              {isLoading && (
+              {!account && (
                 <div className="text-center text-sm text-muted-foreground">
                   Please connect your wallet to continue
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+
+          {/* Transaction History Table */}
+          <TransactionHistory transactions={transactions} />
         </div>
       </div>
     </ThirdwebProvider>
