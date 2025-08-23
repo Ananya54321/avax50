@@ -1,6 +1,4 @@
 "use client";
-
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThirdwebProvider } from "thirdweb/react";
@@ -10,7 +8,6 @@ import { ConnectButton } from "thirdweb/react";
 import { client, wallets } from "@/app/client";
 import { avalancheFuji } from "thirdweb/chains";
 
-const inter = Inter({ subsets: ["latin"] });
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <QueryClientProvider client={queryClient}>
           <ThirdwebProvider>
             <div className="h-full flex flex-col">

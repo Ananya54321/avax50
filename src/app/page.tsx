@@ -38,21 +38,18 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link href="/buy">
-                  <Button
-                    size="lg"
-                    className="bg-gray-100 text-black px-8 py-4 text-lg font-semibold rounded-full"
+                  <button
+                    className="bg-gray-100 text-black px-8 py-2 text-lg font-semibold rounded-full hover:bg-gray-300"
                   >
                     Buy Token Basket
-                  </Button>
+                  </button>
                 </Link>
                 <Link href="/view-tokens">
-                  <Button
-                    variant="default"
-                    size="lg"
-                    className="border-2 border-white text-white px-8 py-4 text-lg font-semibold rounded-full hover: hover:text-black"
+                  <button
+                    className="border-2 border-white text-white px-8 py-2 text-lg font-semibold rounded-full hover: hover:bg-red-700"
                   >
                     Explore Tokens
-                  </Button>
+                  </button>
                 </Link>
               </div>
             </div>
