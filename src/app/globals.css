@@ -43,6 +43,37 @@ body {
   @apply bg-background text-foreground;
 }
 
+.titlefont {
+  font-family: "Bangers", cursive;
+  font-weight: 700;
+  font-style: bold;
+}
+
+.buttonfont {
+  font-family: "Bangers", cursive;
+  font-weight: 400;
+  font-style: regular;
+}
+
+.wordspacing {
+  word-spacing: 10px;  
+}
+
+.sidebarfont {
+  font-family: "Comic Neue", cursive;
+  font-weight: 700;
+  font-style: bold;
+}
+
+body{
+  background-color: var(--background);
+  transition: background-color 0.3s ease;
+  font-family: "Comic Neue", cursive;
+  font-weight: 700;
+  font-style: bold;
+
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
