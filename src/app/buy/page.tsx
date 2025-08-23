@@ -1,0 +1,317 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import axios from "axios";
+import tokens from "@/utils/tokens";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ThirdwebProvider, useActiveAccount } from "thirdweb/react";
+import { prepareTransaction } from "thirdweb";
+import { sendAndConfirmTransaction } from "thirdweb";
+import { useWalletBalance } from "thirdweb/react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+
+import { toast } from "sonner";
+
+import { client } from "../client";
+import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
+import { privateKeyToAccount } from "thirdweb/wallets/private-key";
+import { defineChain } from "thirdweb/chains";
+import { getBalance } from "thirdweb/extensions/erc20";
+
+const Page = () => {
+  const [balance, setBalance] = useState(0);
+  const [avaxPrice, setAvaxPrice] = useState(0);
+  const [usdAmount, setUsdAmount] = useState(0);
+  const [avaxAmount, setAvaxAmount] = useState(0);
+  const chainId = 43113; // Avalanche Fuji
+  const [transferProgress, setTransferProgress] = useState(0);
+  const [currentTokenIndex, setCurrentTokenIndex] = useState(0);
+  const [transferredTokens, setTransferredTokens] = useState<string[]>([]);
+  const [failedTokens, setFailedTokens] = useState<string[]>([]);
+  const account = useActiveAccount();
+  const { data, isLoading, isError } = useWalletBalance({
+    chain: defineChain(chainId),
+    address: account?.address,
+    client,
+  });
+
+  // Fetch AVAX price
+  async function fetchAvaxPrice() {
+    try {
+      const res = await axios.get(
+        "https://api.coingecko.com/api/v3/coins/avalanche-2",
+        {
+          headers: { x_cg_demo_api_key: process.env.NEXT_PUBLIC_GECKO_KEY! },
+        }
+      );
+      setAvaxPrice(res.data.market_data.current_price.usd);
+    } catch (err) {
+      toast.error("Error fetching AVAX price, try again later");
+    }
+  }
+  useEffect(() => {
+    if (avaxAmount > 0 && avaxPrice > 0) {
+      setUsdAmount(avaxAmount * avaxPrice);
+    } else {
+      setUsdAmount(0);
+    }
+  }, [avaxAmount, avaxPrice]);
+
+  useEffect(() => {
+    if (isLoading || isError) return;
+
+    if (!data) {
+      toast.error("Failed to fetch AVAX balance");
+      return;
+    }
+
+    setBalance(parseFloat(data.displayValue));
+  }, [data, isLoading, isError]);
+  // Buy token basket
+  async function buyBasket() {
+    if (!account || !account.address) {
+      return;
+    }
+
+    setTransferProgress(0);
+    setCurrentTokenIndex(0);
+    setTransferredTokens([]);
+    setFailedTokens([]);
+
+    try {
+      const transaction = prepareTransaction({
+        to: "0xB2673DEa091820C1678dcF7052d836D0a816f991",
+        chain: defineChain(chainId),
+        client: client,
+        value: BigInt(avaxAmount * 1e18),
+      });
+      const transactionReceipt = await sendAndConfirmTransaction({
+        account,
+        transaction,
+      });
+      if (!transactionReceipt) throw new Error("AVAX payment failed");
+
+      // Wallet to send tokens (server key)
+      const wallet = privateKeyToAccount({
+        client,
+        privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY!,
+      });
+
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        setCurrentTokenIndex(i);
+
+        try {
+          const contract = getContract({
+            client,
+            chain: defineChain(chainId),
+            address: token.contractAddress,
+          });
+
+          const tokenAmount = BigInt(
+            Math.floor(
+              ((usdAmount * parseFloat(token.percentage)) /
+                100 /
+                token.priceUsd) *
+                1e18
+            )
+          );
+
+          const transaction = await prepareContractCall({
+            contract,
+            method:
+              "function transfer(address to, uint256 value) returns (bool)",
+            params: [account?.address, tokenAmount],
+          });
+
+          const { transactionHash } = await sendAndConfirmTransaction({
+            transaction,
+            account: wallet,
+          });
+
+          setTransferredTokens((prev) => [...prev, token.symbol]);
+          setTransferProgress(((i + 1) / tokens.length) * 100);
+          console.log(`✅ Transferred ${token.symbol}: ${transactionHash}`);
+        } catch (err) {
+          console.error(`❌ Failed to transfer ${token.symbol}:`, err);
+          setFailedTokens((prev) => [...prev, token.symbol]);
+          toast.error(`Failed to transfer ${token.symbol}, continuing...`);
+          setTransferProgress(((i + 1) / tokens.length) * 100);
+        }
+      }
+
+      toast.success("Basket purchase process completed!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error buying basket");
+    } finally {
+    }
+  }
+
+  useEffect(() => {
+    fetchAvaxPrice();
+  }, []);
+
+  return (
+    <ThirdwebProvider>
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold">
+                Token50 Basket
+              </CardTitle>
+              <CardDescription>
+                Exchange AVAX for a diversified basket of 50 tokens
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="avax-input" className="text-sm font-medium">
+                    AVAX Amount
+                  </label>
+                  <Input
+                    id="avax-input"
+                    placeholder="Enter AVAX amount"
+                    min={0}
+                    type="number"
+                    max={balance}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value) || 0;
+                      setAvaxAmount(value);
+                    }}
+                    value={avaxAmount}
+                    className="text-lg"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card className="p-4">
+                    <div className="text-sm text-muted-foreground">
+                      USD Value
+                    </div>
+                    <div className="text-2xl font-bold text-green-600">
+                      ${usdAmount.toFixed(2)}
+                    </div>
+                  </Card>
+                  <Card className="p-4">
+                    <div className="text-sm text-muted-foreground">
+                      Available Balance
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {balance.toFixed(4)} AVAX
+                    </div>
+                  </Card>
+                </div>
+              </div>
+
+              <Separator />
+
+              {isLoading && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Transfer Progress</span>
+                      <span>{Math.round(transferProgress)}%</span>
+                    </div>
+                    <Progress value={transferProgress} className="h-2" />
+                    <div className="text-sm text-muted-foreground">
+                      Processing token {currentTokenIndex + 1} of{" "}
+                      {tokens.length}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="p-4">
+                      <div className="text-sm text-muted-foreground">
+                        Successful
+                      </div>
+                      <div className="text-xl font-bold text-green-600">
+                        {transferredTokens.length}
+                      </div>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {transferredTokens.slice(-5).map((token) => (
+                          <Badge
+                            key={token}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {token}
+                          </Badge>
+                        ))}
+                        {transferredTokens.length > 5 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{transferredTokens.length - 5} more
+                          </Badge>
+                        )}
+                      </div>
+                    </Card>
+                    <Card className="p-4">
+                      <div className="text-sm text-muted-foreground">
+                        Failed
+                      </div>
+                      <div className="text-xl font-bold text-red-600">
+                        {failedTokens.length}
+                      </div>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {failedTokens.slice(-5).map((token) => (
+                          <Badge
+                            key={token}
+                            variant="destructive"
+                            className="text-xs"
+                          >
+                            {token}
+                          </Badge>
+                        ))}
+                        {failedTokens.length > 5 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{failedTokens.length - 5} more
+                          </Badge>
+                        )}
+                      </div>
+                    </Card>
+                  </div>
+                </div>
+              )}
+
+              <Button
+                onClick={buyBasket}
+                disabled={isLoading || avaxAmount <= 0 || avaxAmount > balance}
+                className="w-full h-12 text-lg font-semibold"
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Processing Transfer...
+                  </div>
+                ) : (
+                  "Buy Token Basket"
+                )}
+              </Button>
+
+              {isLoading && (
+                <div className="text-center text-sm text-muted-foreground">
+                  Please connect your wallet to continue
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </ThirdwebProvider>
+  );
+};
+
+export default Page;
