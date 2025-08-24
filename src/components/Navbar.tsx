@@ -121,10 +121,10 @@ const Navbar = () => {
       </nav>
 
       {/* Footer */}
-      <div className='p-4 border-t border-gray-700'>
-        <div className='text-xs text-muted-foreground text-center'>
-          v1.0.0
-        </div>
+      <div className='p-4 border-t border-gray-700 flex flex-col justify-center items-center gap-4'>
+        Made by:
+        <Link href="https://x.com/AnanyaPappula" target="_blank">@AnanyaPappula</Link>
+        <Link href="https://x.com/mani_yadla_" target="_blank">@mani_yadla_</Link>
       </div>
     </div>
   )

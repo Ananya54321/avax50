@@ -92,7 +92,7 @@ export default function Home() {
             header={
               <div className="relative h-32 w-full rounded-lg bg-gradient-to-br from-zinc-700 to-zinc-900 border border-zinc-600 overflow-hidden">
                 <Image
-                  src="/time.png"
+                  src="/balance.png"
                   alt="Smart Rebalancing"
                   fill
                   className="object-cover"

@@ -100,63 +100,66 @@ export default function TokenInfo({
 
       {/* Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl border border-gray-700 bg-black">
+        <DialogContent className="border border-gray-700 bg-black w-[90vw] max-w-4xl min-w-[60vw]">
           <DialogHeader>
-            <DialogTitle>{tokenName} ({symbol})</DialogTitle>
+            <DialogTitle className="text-2xl">{tokenName} ({symbol})</DialogTitle>
           </DialogHeader>
           
           <div className="p-6 pt-0">
-            {/* Token Image - Centered */}
-            <div className="flex gap-4 justify-center mb-6">
-              <div className="bg-secondary-background border-1 border-gray-700 rounded-base">
-                <Image
-                  src={imageUrl}
-                  alt={tokenName}
-                  className="object-cover"
-                  width={500}
-                  height={100}
-                  onError={(e) => {
-                    e.currentTarget.src = "/favicon.ico";
-                  }}
-                /> 
-              </div>
-
-            {/* Token Information - Full Width */}
-            <div className="w-full flex flex-col space-y-4">
-              {/* Price Information */}
-              <div className="bg-secondary-background flex flex-col border-2 border-gray-700 rounded-base p-4">
-                <h4 className="font-heading text-lg text-white mb-3">Price Information</h4>
-                <div className="grid grid-cols-1  gap-4">
-                  <div className="flex justify-between text-lg">
-                    <span className="text-white/70">Current Price:</span>
-                    <span className="font-base text-white">${priceUsd.toFixed(6)}</span>
-                  </div>
-                  <div className="flex justify-between text-lg">
-                    <span className="text-white/70">Percentage:</span>
-                    <span className={cn(
-                      "font-base",
-                      isPositive ? "text-green-600" : "text-red-600"
-                    )}>
-                      {isPositive ? "+" : ""}{percentage}%
-                    </span>
-                  </div>
+            {/* Main Content Layout - Token Image + Information Side by Side */}
+            <div className="flex gap-6 mb-6">
+              {/* Token Image - Left Side */}
+              <div className="flex-shrink-0">
+                <div className="bg-secondary-background border-2 border-gray-700 rounded-base p-4">
+                  <Image
+                    src={imageUrl}
+                    alt={tokenName}
+                    className="object-cover rounded-base"
+                    width={200}
+                    height={200}
+                    onError={(e) => {
+                      e.currentTarget.src = "/favicon.ico";
+                    }}
+                  /> 
                 </div>
               </div>
 
-              {/* Market Information */}
-              <div className="bg-secondary-background flex flex-col border-2 border-gray-700 rounded-base p-4">
-                <h4 className="font-heading text-lg text-white mb-3">Market Information</h4>
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="flex justify-between text-lg">
-                    <span className="text-white/70">Market Cap:</span>
-                    <span className="font-base text-white">{formatNumber(marketCapUsd)}</span>
-                  </div>
-                  <div className="flex justify-between text-lg">
-                    <span className="text-white/70">Total Supply:</span>
-                    <span className="font-base text-white">{formatSupply(supply)}</span>
+              {/* Token Information - Right Side */}
+              <div className="flex-1 flex flex-col space-y-4">
+                {/* Price Information */}
+                <div className="bg-secondary-background flex flex-col border-2 border-gray-700 rounded-base p-4">
+                  <h4 className="font-heading text-lg text-white mb-3">Price Information</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="flex justify-between text-lg">
+                      <span className="text-white/70">Current Price:</span>
+                      <span className="font-base text-white">${priceUsd.toFixed(6)}</span>
+                    </div>
+                    <div className="flex justify-between text-lg">
+                      <span className="text-white/70">Percentage:</span>
+                      <span className={cn(
+                        "font-base",
+                        isPositive ? "text-green-600" : "text-red-600"
+                      )}>
+                        {isPositive ? "+" : ""}{percentage}%
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Market Information */}
+                <div className="bg-secondary-background flex flex-col border-2 border-gray-700 rounded-base p-4">
+                  <h4 className="font-heading text-lg text-white mb-3">Market Information</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="flex justify-between text-lg">
+                      <span className="text-white/70">Market Cap:</span>
+                      <span className="font-base text-white">{formatNumber(marketCapUsd)}</span>
+                    </div>
+                    <div className="flex justify-between text-lg">
+                      <span className="text-white/70">Total Supply:</span>
+                      <span className="font-base text-white">{formatSupply(supply)}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
