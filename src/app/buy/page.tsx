@@ -1,7 +1,5 @@
 "use client";
-import {
-  AwesomeButtonProgress,
-} from 'react-awesome-button';
+import { AwesomeButtonProgress } from "react-awesome-button";
 
 import { useEffect, useState } from "react";
 
@@ -16,7 +14,10 @@ import { useWalletBalance } from "thirdweb/react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { TransactionHistory, Transaction } from "@/components/feature/TransactionHistory";
+import {
+  TransactionHistory,
+  Transaction,
+} from "@/components/feature/TransactionHistory";
 
 import { toast } from "sonner";
 
@@ -181,9 +182,7 @@ const Page = () => {
           {/* Header Section */}
           <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold">
-                Token50 Basket
-              </h1>
+              <h1 className="text-2xl font-bold">Token50 Basket</h1>
               <p className="text-sm text-muted-foreground mt-1">
                 Exchange AVAX for a diversified basket of 50 tokens
               </p>
@@ -300,7 +299,9 @@ const Page = () => {
 
               <button
                 onClick={buyBasket}
-                disabled={isProcessing || avaxAmount <= 0 || avaxAmount > balance}
+                disabled={
+                  isProcessing || avaxAmount <= 0 || avaxAmount > balance
+                }
                 className="w-full h-12 text-lg bg-red-800 font-semibold"
               >
                 {isProcessing ? (
@@ -323,6 +324,24 @@ const Page = () => {
 
           {/* Transaction History Table */}
           <TransactionHistory transactions={transactions} />
+        </div>
+        <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6 my-3">
+          <h2 className="text-lg font-semibold mb-4">Tokens in Basket</h2>
+          <div className="flex flex-wrap gap-4">
+            {tokens.map((token) => (
+              <div
+                key={token.contractAddress}
+                className="flex items-center gap-2 bg-background border border-gray-700 rounded-lg px-3 py-2"
+              >
+                <img
+                  src={token.url}
+                  alt={token.tokenName}
+                  className="w-6 h-6 rounded-full"
+                />
+                <span className="text-sm font-medium">{token.tokenName}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </ThirdwebProvider>

@@ -34,7 +34,12 @@ export default function RootLayout({
               <div className="h-full flex flex-col">
                 <div className="bg-black border-b border-gray-700 flex justify-between items-center p-4 flex-shrink-0">
                   {/* <div className="text-white pl-2 titlefont text-3xl">AVAX50</div> */}
-                  <Image src="/logo.png" alt="Logo" width={130} height={130} />
+                  <Image
+                    src="/token-logo.png"
+                    alt="Logo"
+                    width={130}
+                    height={130}
+                  />
                   <div className="flex items-center gap-4">
                     <ThemeToggle />
                     <ConnectButton
