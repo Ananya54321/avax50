@@ -72,14 +72,14 @@ export default function ImageCard({
 
         <Image
           className={cn(
-            "relative z-20 h-full w-full object-cover transition-all duration-300",
+            "relative z-20 h-[80%] w-[80%] mx-auto mt-6 transition-all duration-300",
             imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-110",
             "group-hover:scale-105"
           )}
           src={currentImageUrl} 
           alt={caption}
-          width={500}
-          height={500}
+          width={150}
+          height={150}
           onLoad={handleImageLoad}
           onError={handleImageError}
           priority={false}

@@ -1,5 +1,4 @@
 "use client";
-import { AwesomeButtonProgress } from "react-awesome-button";
 
 import { useEffect, useState } from "react";
 
@@ -141,7 +140,7 @@ const Page = () => {
             account: wallet,
           });
 
-          // Add successful transaction to the list
+          // Add successful transaction to the list (prepend to show newest first)
           const newTransaction: Transaction = {
             id: `${Date.now()}-${i}`,
             tokenSymbol: token.symbol,
@@ -149,7 +148,7 @@ const Page = () => {
             timestamp: new Date(),
             status: "success",
           };
-          setTransactions((prev) => [...prev, newTransaction]);
+          setTransactions((prev) => [newTransaction, ...prev]);
 
           setTransferredTokens((prev) => [...prev, token.symbol]);
           setTransferProgress(((i + 1) / tokens.length) * 100);
@@ -178,11 +177,12 @@ const Page = () => {
   return (
     <ThirdwebProvider>
       <div className="min-h-screen bg-background p-6">
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="mx-auto space-y-6">
           {/* Header Section */}
-          <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6">
+          <div className="flex w-full gap-6">
+            <div className="flex-1 bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold">Token50 Basket</h1>
+              <h1 className="text-2xl font-bold">Buy Token50 Basket</h1>
               <p className="text-sm text-muted-foreground mt-1">
                 Exchange AVAX for a diversified basket of 50 tokens
               </p>
@@ -228,9 +228,57 @@ const Page = () => {
                 </div>
               </div>
 
-              <Separator />
+              <Separator className="mt-16" />
 
-              {isProcessing && (
+              
+
+              <button
+                onClick={buyBasket}
+                disabled={
+                  isProcessing || avaxAmount <= 0 || avaxAmount > balance
+                }
+                className="w-full h-12 text-lg bg-red-800 font-semibold"
+              >
+                {isProcessing ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-1 border-gray-700 border-t-transparent rounded-full animate-spin" />
+                    Processing Transfer...
+                  </div>
+                ) : (
+                  "Buy Token Basket"
+                )}
+              </button>
+
+              {!account ? (
+                <div className="text-center text-sm text-muted-foreground">
+                  Please connect your wallet to continue
+                </div>
+              ) : <div className="text-center text-sm text-muted-foreground">
+                  Wallet is connected!
+                </div>}
+            </div>
+
+            </div>
+            <div className="flex-1 bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold mb-4">Tokens in Basket</h2>
+          <div className="flex flex-wrap gap-4 max-h-96 overflow-y-auto">
+            {tokens.map((token) => (
+              <div
+                key={token.contractAddress}
+                className="flex items-center gap-2 bg-background border border-gray-700 rounded-lg px-3 py-2"
+              >
+                <img
+                  src={token.url}
+                  alt={token.tokenName}
+                  className="w-6 h-6 rounded-full"
+                />
+                <span className="text-sm font-medium">{token.tokenName}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+          </div>     
+          {isProcessing && (
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
@@ -295,54 +343,12 @@ const Page = () => {
                     </div>
                   </div>
                 </div>
-              )}
-
-              <button
-                onClick={buyBasket}
-                disabled={
-                  isProcessing || avaxAmount <= 0 || avaxAmount > balance
-                }
-                className="w-full h-12 text-lg bg-red-800 font-semibold"
-              >
-                {isProcessing ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-1 border-gray-700 border-t-transparent rounded-full animate-spin" />
-                    Processing Transfer...
-                  </div>
-                ) : (
-                  "Buy Token Basket"
-                )}
-              </button>
-
-              {!account && (
-                <div className="text-center text-sm text-muted-foreground">
-                  Please connect your wallet to continue
-                </div>
-              )}
-            </div>
-          </div>
+              )}     
 
           {/* Transaction History Table */}
           <TransactionHistory transactions={transactions} />
         </div>
-        <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6 my-3">
-          <h2 className="text-lg font-semibold mb-4">Tokens in Basket</h2>
-          <div className="flex flex-wrap gap-4">
-            {tokens.map((token) => (
-              <div
-                key={token.contractAddress}
-                className="flex items-center gap-2 bg-background border border-gray-700 rounded-lg px-3 py-2"
-              >
-                <img
-                  src={token.url}
-                  alt={token.tokenName}
-                  className="w-6 h-6 rounded-full"
-                />
-                <span className="text-sm font-medium">{token.tokenName}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        
       </div>
     </ThirdwebProvider>
   );

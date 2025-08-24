@@ -35,7 +35,7 @@ export default function RootLayout({
                 <div className="bg-black border-b border-gray-700 flex justify-between items-center p-4 flex-shrink-0">
                   {/* <div className="text-white pl-2 titlefont text-3xl">AVAX50</div> */}
                   <Image
-                    src="/token-logo.png"
+                    src="/logo.png"
                     alt="Logo"
                     width={130}
                     height={130}

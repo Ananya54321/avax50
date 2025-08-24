@@ -1,21 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Copy, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -73,40 +58,54 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
           <CheckCircle className="w-5 h-5 text-green-600" />
           Successful Transactions
-        </CardTitle>
-        <CardDescription>
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
           Transaction history for your recent token purchases
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Token</TableHead>
-              <TableHead>Transaction Hash</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        </p>
+      </div>
+
+      {/* Transactions Table */}
+      <div className="overflow-x-auto rounded-lg border border-border shadow">
+        <table className="w-full border-collapse">
+          <thead className="bg-secondary-background">
+            <tr>
+              <th className="px-4 py-3 text-left">Token</th>
+              <th className="px-4 py-3 text-left">Transaction Hash</th>
+              <th className="px-4 py-3 text-left">Time</th>
+              <th className="px-4 py-3 text-left">Status</th>
+              <th className="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             {successfulTransactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell className="font-medium">
-                  <Badge variant="secondary">{transaction.tokenSymbol}</Badge>
-                </TableCell>
-                <TableCell className="font-mono text-sm">
+              <tr
+                key={transaction.id}
+                className="border-t border-border hover:bg-secondary-background/50 transition"
+              >
+                {/* Token */}
+                <td className="px-4 py-3">
+                  <Badge variant="secondary" className="font-semibold">
+                    {transaction.tokenSymbol}
+                  </Badge>
+                </td>
+
+                {/* Transaction Hash */}
+                <td className="px-4 py-3 font-mono text-sm">
                   {formatHash(transaction.transactionHash)}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                </td>
+
+                {/* Time */}
+                <td className="px-4 py-3 text-sm text-foreground/60">
                   {formatTime(transaction.timestamp)}
-                </TableCell>
-                <TableCell>
+                </td>
+
+                {/* Status */}
+                <td className="px-4 py-3">
                   <Badge
                     variant={
                       transaction.status === "success" ? "default" : "destructive"
@@ -119,14 +118,16 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({
                   >
                     {transaction.status === "success" ? "Success" : "Failed"}
                   </Badge>
-                </TableCell>
-                <TableCell className="text-right">
+                </td>
+
+                {/* Actions */}
+                <td className="px-4 py-3">
                   <div className="flex justify-end gap-1">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => copyToClipboard(transaction.transactionHash)}
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 hover:bg-secondary-background"
                     >
                       {copiedHash === transaction.transactionHash ? (
                         <CheckCircle className="h-4 w-4 text-green-600" />
@@ -138,17 +139,17 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => openInExplorer(transaction.transactionHash)}
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 hover:bg-secondary-background"
                     >
                       <ExternalLink className="h-4 w-4" />
                     </Button>
                   </div>
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 };

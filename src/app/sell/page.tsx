@@ -335,13 +335,11 @@ const Page = () => {
     <ThirdwebProvider>
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-4xl mx-auto space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold">Sell Tokens</CardTitle>
-              <CardDescription>
+          <div className="border border-gray-700 p-6">
+              <p className="text-2xl font-bold">Sell Tokens</p>
+              <p className="pb-6">
                 Transfer your tokens to the master wallet in one go
-              </CardDescription>
-            </CardHeader>
+              </p>
 
             <CardContent className="space-y-6">
               <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
@@ -358,16 +356,17 @@ const Page = () => {
                 )}
               </div>
 
-              <Button
-                onClick={sellTokens}
-                disabled={
-                  isSelling ||
-                  isLoadingBalances ||
-                  !account?.address ||
-                  totalUsd === 0
-                }
-                className="w-full h-12 text-lg font-semibold bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-all duration-200"
-              >
+              <div className="flex justify-end">
+                <Button
+                  onClick={sellTokens}
+                  disabled={
+                    isSelling ||
+                    isLoadingBalances ||
+                    !account?.address ||
+                    totalUsd === 0
+                  }
+                  className="w-[30%] rounded-md h-12 text-lg font-semibold bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-all duration-200"
+                >
                 {isSelling ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -382,6 +381,7 @@ const Page = () => {
                   "Sell Selected Tokens"
                 )}
               </Button>
+              </div>
 
               <div className="flex flex-wrap gap-4 ">
                 {[25, 50, 100].map((p) => (
@@ -454,7 +454,7 @@ const Page = () => {
 
               <Separator />
 
-              <div className="rounded-md border">
+              <div className="border border-gray-700">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -601,86 +601,8 @@ const Page = () => {
                 </Table>
               </div>
 
-              {(transferProgress > 0 || isSelling) && (
-                <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">
-                        {sellPhase === "done" ? "Completed!" : "Progress"}
-                      </span>
-                      {isSelling && sellPhase !== "done" && (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      )}
-                    </div>
-                    <span className="font-mono text-sm">
-                      {Math.round(transferProgress)}%
-                    </span>
-                  </div>
-
-                  <Progress
-                    value={transferProgress}
-                    className="h-3 transition-all duration-300"
-                  />
-
-                  {currentProcessingToken && (
-                    <div className="text-sm text-muted-foreground animate-pulse">
-                      {currentProcessingToken.includes("...")
-                        ? currentProcessingToken
-                        : `Processing: ${currentProcessingToken}`}
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="p-4 border-green-200 bg-green-50/50">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-600" />
-                        <div className="text-sm text-muted-foreground">
-                          Successful
-                        </div>
-                      </div>
-                      <div className="text-xl font-bold text-green-600">
-                        {transferredTokens.length}
-                      </div>
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {transferredTokens.map((t) => (
-                          <Badge
-                            key={t}
-                            variant="secondary"
-                            className="text-xs bg-green-100 text-green-800"
-                          >
-                            {t}
-                          </Badge>
-                        ))}
-                      </div>
-                    </Card>
-
-                    <Card className="p-4 border-red-200 bg-red-50/50">
-                      <div className="flex items-center gap-2">
-                        <XCircle className="w-4 h-4 text-red-600" />
-                        <div className="text-sm text-muted-foreground">
-                          Failed
-                        </div>
-                      </div>
-                      <div className="text-xl font-bold text-red-600">
-                        {failedTokens.length}
-                      </div>
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {failedTokens.map((t) => (
-                          <Badge
-                            key={t}
-                            variant="destructive"
-                            className="text-xs"
-                          >
-                            {t}
-                          </Badge>
-                        ))}
-                      </div>
-                    </Card>
-                  </div>
-                </div>
-              )}
             </CardContent>
-          </Card>
+          </div>
         </div>
       </div>
     </ThirdwebProvider>
