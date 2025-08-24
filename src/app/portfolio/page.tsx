@@ -80,7 +80,7 @@ export default function PortfolioPage() {
     <div className="min-h-screen bg-black text-foreground">
       <div className="container mx-auto px-4 py-6">
         {/* Portfolio Stats */}
-        <div className="bg-secondary-background border-4 border-border rounded-base shadow-shadow p-6 mb-8">
+        <div className="bg-secondary-background border-1 border-gray-700 rounded-base p-6 mb-8">
           <h2 className="font-heading text-2xl text-foreground mb-2">
             Portfolio Balance
           </h2>

@@ -46,7 +46,7 @@ export default function Home() {
                 </Link>
                 <Link href="/view-tokens">
                   <button
-                    className="border-2 border-white text-white px-8 py-2 text-lg font-semibold rounded-full hover: hover:bg-red-700"
+                    className="border-2 border-white text-white px-8 py-2 text-lg font-semibold rounded-full hover: hover:bg-red-900"
                   >
                     Explore Tokens
                   </button>

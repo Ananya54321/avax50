@@ -100,7 +100,7 @@ export default function TokenInfo({
 
       {/* Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl bg-black">
+        <DialogContent className="max-w-2xl border border-gray-700 bg-black">
           <DialogHeader>
             <DialogTitle>{tokenName} ({symbol})</DialogTitle>
           </DialogHeader>

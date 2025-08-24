@@ -5,9 +5,11 @@ import { ThirdwebProvider } from "thirdweb/react";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { ConnectButton } from "thirdweb/react";
 import { client, wallets } from "@/app/client";
 import { avalancheFuji } from "thirdweb/chains";
+import Image from "next/image";
 
 
 const queryClient = new QueryClient({
@@ -27,30 +29,38 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="h-screen antialiased overflow-hidden">
-        <QueryClientProvider client={queryClient}>
-          <ThirdwebProvider>
-            <div className="h-full flex flex-col">
-              <div className="bg-black flex justify-between items-center p-4 flex-shrink-0 border-b-1 border-gray-700">
-                <div className="text-white pl-2 titlefont text-3xl">Token 50</div>
-                <div className="flex items-center gap-4">
-                   <ThemeToggle />
-                <ConnectButton
-                  client={client}
-                  wallets={wallets}
-                  chain={avalancheFuji}
+        <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <ThirdwebProvider>
+              <div className="h-full flex flex-col">
+                <div className="bg-black border-b border-gray-700 flex justify-between items-center p-4 flex-shrink-0">
+                  {/* <div className="text-white pl-2 titlefont text-3xl">AVAX50</div> */}
+                  <Image
+                    src="/logo.png"
+                    alt="Logo"
+                    width={130}
+                    height={130}
                   />
-                  </div>
-              </div>
-              <Toaster />
-              <div className="flex flex-1 min-h-0">
-                <div className="w-[15%] flex-shrink-0">
-                  <Navbar />
+                  <div className="flex items-center gap-4">
+                     <ThemeToggle />
+                  <ConnectButton 
+                    client={client}
+                    wallets={wallets}
+                    chain={avalancheFuji}
+                    />
+                    </div>
                 </div>
-                <div className="w-[85%] overflow-y-auto">{children}</div>
+                <Toaster />
+                <div className="flex flex-1 min-h-0">
+                  <div className="w-[15%] flex-shrink-0">
+                    <Navbar />
+                  </div>
+                  <div className="w-[85%] overflow-y-auto">{children}</div>
+                </div>
               </div>
-            </div>
-          </ThirdwebProvider>
-        </QueryClientProvider>
+            </ThirdwebProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

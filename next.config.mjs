@@ -12,6 +12,10 @@ const nextConfig = {
       "assets.coingecko.com",
       "coin-images.coingecko.com",
       "assets.coingecko.com",
+      "s2.coinmarketcap.com",
+      "avatars.githubusercontent.com",
+      "s3.coinmarketcap.com",
+      "cryptologos.cc"
     ],
   },
 };
