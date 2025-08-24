@@ -11,12 +11,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PreparedTransaction, prepareTransaction } from "thirdweb";
+import { type PreparedTransaction, prepareTransaction } from "thirdweb";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { privateKeyToAccount } from "thirdweb/wallets/private-key";
 import { toast } from "sonner";
+import { Loader2, CheckCircle, XCircle, DollarSign } from "lucide-react";
 
 import {
   ThirdwebProvider,
@@ -51,6 +69,16 @@ const Page = () => {
   const [failedTokens, setFailedTokens] = useState<string[]>([]);
   const [totalUsd, setTotalUsd] = useState(0);
   const [avaxPrice, setAvaxPrice] = useState(0);
+  const [isSelling, setIsSelling] = useState(false);
+  const [isLoadingBalances, setIsLoadingBalances] = useState(false);
+  const [currentProcessingToken, setCurrentProcessingToken] =
+    useState<string>("");
+  const [sellPhase, setSellPhase] = useState<
+    "idle" | "preparing" | "transferring" | "completing" | "done"
+  >("idle");
+  const [customPercentage, setCustomPercentage] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   async function fetchAvaxPrice() {
     try {
       const res = await fetch(
@@ -62,11 +90,12 @@ const Page = () => {
       console.error("❌ Failed to fetch AVAX price", err);
     }
   }
+
   useEffect(() => {
     let total = 0;
     for (const token of tokens) {
       const amount = sellAmounts[token.contractAddress] || 0;
-      const price = token.priceUsd || 0; // ✅ use your token.price
+      const price = token.priceUsd || 0;
       total += amount * price;
     }
     setTotalUsd(total);
@@ -79,6 +108,7 @@ const Page = () => {
   async function fetchBalances() {
     if (!account?.address) return;
 
+    setIsLoadingBalances(true);
     const results: Record<string, number> = {};
     const init: Record<string, number> = {};
 
@@ -108,6 +138,7 @@ const Page = () => {
 
     setBalances(results);
     setSellAmounts(init);
+    setIsLoadingBalances(false);
   }
 
   useEffect(() => {
@@ -122,24 +153,44 @@ const Page = () => {
       return;
     }
 
+    setIsSelling(true);
+    setSellPhase("preparing");
     setTransferProgress(0);
     setCurrentTokenIndex(0);
     setTransferredTokens([]);
     setFailedTokens([]);
+    setCurrentProcessingToken("");
 
     const walletTo = process.env.NEXT_PUBLIC_FAT_WALLLET_ADDRESS!;
     if (!walletTo) {
       toast.error("❌ Missing destination wallet address");
+      setIsSelling(false);
+      setSellPhase("idle");
       return;
     }
-    const preparedTxs: PreparedTransaction[] = [];
 
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
+    const preparedTxs: PreparedTransaction[] = [];
+    const tokensToProcess = tokens.filter((token) => {
       const amount = sellAmounts[token.contractAddress];
-      if (!amount || amount <= 0) continue;
+      return amount && amount > 0;
+    });
+
+    if (tokensToProcess.length === 0) {
+      toast.error("Please select tokens to sell");
+      setIsSelling(false);
+      setSellPhase("idle");
+      return;
+    }
+
+    setSellPhase("transferring");
+    toast.info(`Preparing ${tokensToProcess.length} token transfers...`);
+
+    for (let i = 0; i < tokensToProcess.length; i++) {
+      const token = tokensToProcess[i];
+      const amount = sellAmounts[token.contractAddress];
 
       setCurrentTokenIndex(i);
+      setCurrentProcessingToken(token.symbol);
 
       try {
         const contract = getContract({
@@ -157,24 +208,31 @@ const Page = () => {
         });
 
         preparedTxs.push(transaction);
-
         setTransferredTokens((prev) => [...prev, token.symbol]);
-        setTransferProgress(((i + 1) / tokens.length) * 100);
+        setTransferProgress(((i + 1) / tokensToProcess.length) * 50); // 50% for preparation
       } catch (err) {
-        console.error(`❌ Failed to sell ${token.symbol}:`, err);
+        console.error(`❌ Failed to prepare ${token.symbol}:`, err);
         setFailedTokens((prev) => [...prev, token.symbol]);
-        toast.error(`Failed to sell ${token.symbol}, continuing...`);
-        setTransferProgress(((i + 1) / tokens.length) * 100);
+        toast.error(`Failed to prepare ${token.symbol}, continuing...`);
+        setTransferProgress(((i + 1) / tokensToProcess.length) * 50);
       }
     }
+
+    setSellPhase("completing");
+    setCurrentProcessingToken("Executing batch transaction...");
+
     try {
       const { transactionHash } = await sendBatchTransaction({
         transactions: preparedTxs,
         account,
       });
+
+      setTransferProgress(75);
       console.log(transactionHash);
-      toast.success("Sell process completed!");
-      if (transactionHash) {
+      toast.success("Token transfers completed!");
+
+      if (transactionHash && totalUsd > 0 && avaxPrice > 0) {
+        setCurrentProcessingToken("Sending AVAX payment...");
         const wallet = privateKeyToAccount({
           client,
           privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY!,
@@ -189,14 +247,32 @@ const Page = () => {
           account: wallet,
           transaction,
         });
+
         if (transactionReceipt) {
-          toast.success("✅ Avax Transfer Successful");
+          toast.success("✅ AVAX payment sent successfully!");
+          setTransferProgress(100);
         } else {
-          toast.error("❌ Avax Transfer Failed");
+          toast.error("❌ AVAX payment failed");
+          setTransferProgress(90);
         }
+      } else {
+        setTransferProgress(100);
       }
+
+      setSellPhase("done");
+      setTimeout(() => {
+        setSellPhase("idle");
+        setTransferProgress(0);
+        setCurrentProcessingToken("");
+        // Refresh balances after successful sale
+        fetchBalances();
+      }, 3000);
     } catch (err) {
       console.error("❌ Failed to send batch transaction:", err);
+      toast.error("Transaction failed. Please try again.");
+      setSellPhase("idle");
+    } finally {
+      setIsSelling(false);
     }
   }
 
@@ -215,10 +291,49 @@ const Page = () => {
     }));
   };
 
+  const getPhaseDescription = () => {
+    switch (sellPhase) {
+      case "preparing":
+        return "Preparing transactions...";
+      case "transferring":
+        return "Processing token transfers...";
+      case "completing":
+        return "Finalizing transactions...";
+      case "done":
+        return "All transactions completed!";
+      default:
+        return "";
+    }
+  };
+
+  const handleCustomPercentage = () => {
+    const val = Number(customPercentage);
+    if (val >= 0 && val <= 100) {
+      applyMasterPercentage(val);
+      setIsDialogOpen(false);
+      setCustomPercentage("");
+    } else {
+      toast.error("Please enter a valid percentage between 0 and 100");
+    }
+  };
+
+  const getTokenStatusIcon = (tokenSymbol: string) => {
+    if (transferredTokens.includes(tokenSymbol)) {
+      return <CheckCircle className="w-4 h-4 text-green-600" />;
+    }
+    if (failedTokens.includes(tokenSymbol)) {
+      return <XCircle className="w-4 h-4 text-red-600" />;
+    }
+    if (currentProcessingToken === tokenSymbol && isSelling) {
+      return <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />;
+    }
+    return null;
+  };
+
   return (
     <ThirdwebProvider>
       <div className="min-h-screen bg-background p-6">
-        <div className="max-w-3xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl font-bold">Sell Tokens</CardTitle>
@@ -227,98 +342,287 @@ const Page = () => {
               </CardDescription>
             </CardHeader>
 
-            <div className="space-y-1">
-              <div className="text-lg font-semibold">
-                Estimated USD: ${totalUsd.toFixed(2)}
-              </div>
-              {avaxPrice > 0 && (
-                <div className="text-md text-muted-foreground">
-                  ≈ {(totalUsd / avaxPrice).toFixed(4)} AVAX
-                </div>
-              )}
-            </div>
-
-            <Button
-              onClick={sellTokens}
-              disabled={isLoading || !account?.address}
-              className="w-full h-12 text-lg font-semibold bg-red-600 hover:bg-red-700"
-            >
-              {isLoading ? "Fetching balances..." : "Sell Selected Tokens"}
-            </Button>
-
             <CardContent className="space-y-6">
-              <div className="flex gap-4">
+              <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-green-600" />
+                  <div className="text-lg font-semibold">
+                    Estimated USD: ${totalUsd.toFixed(2)}
+                  </div>
+                </div>
+                {avaxPrice > 0 && (
+                  <div className="text-md text-muted-foreground ml-7">
+                    ≈ {(totalUsd / avaxPrice).toFixed(4)} AVAX
+                  </div>
+                )}
+              </div>
+
+              <Button
+                onClick={sellTokens}
+                disabled={
+                  isSelling ||
+                  isLoadingBalances ||
+                  !account?.address ||
+                  totalUsd === 0
+                }
+                className="w-full h-12 text-lg font-semibold bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-all duration-200"
+              >
+                {isSelling ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {getPhaseDescription()}
+                  </div>
+                ) : isLoadingBalances ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Fetching balances...
+                  </div>
+                ) : (
+                  "Sell Selected Tokens"
+                )}
+              </Button>
+
+              <div className="flex flex-wrap gap-4 border border-red-500">
                 {[25, 50, 100].map((p) => (
-                  <Button key={p} onClick={() => applyMasterPercentage(p)}>
+                  <Button
+                    key={p}
+                    onClick={() => applyMasterPercentage(p)}
+                    disabled={isLoadingBalances || isSelling}
+                    variant="outline"
+                    className="transition-all duration-200"
+                  >
                     {p}%
                   </Button>
                 ))}
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    const custom = prompt("Enter custom % (0-100):");
-                    if (!custom) return;
-                    const val = Number(custom);
-                    if (val >= 0 && val <= 100) applyMasterPercentage(val);
-                  }}
-                >
-                  Custom %
-                </Button>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      disabled={isLoadingBalances || isSelling}
+                      className="transition-all duration-200 bg-transparent"
+                    >
+                      Custom %
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Custom Percentage</DialogTitle>
+                      <DialogDescription>
+                        Enter a custom percentage (0–100) to apply to all token
+                        balances.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="percentage" className="text-right">
+                          Percentage
+                        </Label>
+                        <Input
+                          id="percentage"
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={customPercentage}
+                          onChange={(e) => setCustomPercentage(e.target.value)}
+                          className="col-span-3"
+                          placeholder="Enter 0-100"
+                        />
+                      </div>
+                    </div>
+
+                    <Button type="submit" onClick={handleCustomPercentage}>
+                      Apply Percentage
+                    </Button>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               <Separator />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {tokens.map((token) => (
-                  <Card key={token.contractAddress} className="p-4">
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={token.url}
-                        alt={token.tokenName}
-                        className="w-12 h-12"
-                      />
-                      <div className="flex-1">
-                        <div className="font-semibold">
-                          {token.tokenName} ({token.symbol})
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          Balance: {balances[token.contractAddress] ?? 0}
-                        </div>
-                        <Input
-                          type="number"
-                          min={0}
-                          max={balances[token.contractAddress] ?? 0}
-                          value={sellAmounts[token.contractAddress] ?? 0}
-                          onChange={(e) =>
-                            handleInputChange(
-                              token.contractAddress,
-                              e.target.value
-                            )
-                          }
-                          className="mt-2"
-                        />
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[50%]">Token</TableHead>
+                      <TableHead className="w-[50%]">Token</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: Math.ceil(tokens.length / 2) }).map(
+                      (_, rowIndex) => {
+                        const leftToken = tokens[rowIndex * 2];
+                        const rightToken = tokens[rowIndex * 2 + 1];
+
+                        return (
+                          <TableRow key={rowIndex}>
+                            <TableCell className="p-4">
+                              {leftToken && (
+                                <div
+                                  className={`flex items-center gap-4 p-3 rounded-lg transition-all duration-200 ${
+                                    currentProcessingToken ===
+                                      leftToken.symbol && isSelling
+                                      ? "bg-blue-50 ring-2 ring-blue-200"
+                                      : "bg-muted/30"
+                                  }`}
+                                >
+                                  <div className="relative">
+                                    <img
+                                      src={leftToken.url || "/placeholder.svg"}
+                                      alt={leftToken.tokenName}
+                                      className="w-10 h-10 rounded-full"
+                                    />
+                                    <div className="absolute -top-1 -right-1">
+                                      {getTokenStatusIcon(leftToken.symbol)}
+                                    </div>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-semibold text-sm truncate">
+                                      {leftToken.tokenName} ({leftToken.symbol})
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      Balance:{" "}
+                                      {isLoadingBalances ? (
+                                        <Loader2 className="w-3 h-3 animate-spin inline" />
+                                      ) : (
+                                        (
+                                          balances[leftToken.contractAddress] ??
+                                          0
+                                        ).toFixed(4)
+                                      )}
+                                    </div>
+                                    <Input
+                                      type="number"
+                                      min={0}
+                                      max={
+                                        balances[leftToken.contractAddress] ?? 0
+                                      }
+                                      value={
+                                        sellAmounts[
+                                          leftToken.contractAddress
+                                        ] ?? 0
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          leftToken.contractAddress,
+                                          e.target.value
+                                        )
+                                      }
+                                      disabled={isLoadingBalances || isSelling}
+                                      className="mt-2 h-8 text-sm"
+                                      placeholder="Amount to sell"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell className="p-4">
+                              {rightToken && (
+                                <div
+                                  className={`flex items-center gap-4 p-3 rounded-lg transition-all duration-200 ${
+                                    currentProcessingToken ===
+                                      rightToken.symbol && isSelling
+                                      ? "bg-blue-50 ring-2 ring-blue-200"
+                                      : "bg-muted/30"
+                                  }`}
+                                >
+                                  <div className="relative">
+                                    <img
+                                      src={rightToken.url || "/placeholder.svg"}
+                                      alt={rightToken.tokenName}
+                                      className="w-10 h-10 rounded-full"
+                                    />
+                                    <div className="absolute -top-1 -right-1">
+                                      {getTokenStatusIcon(rightToken.symbol)}
+                                    </div>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-semibold text-sm truncate">
+                                      {rightToken.tokenName} (
+                                      {rightToken.symbol})
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      Balance:{" "}
+                                      {isLoadingBalances ? (
+                                        <Loader2 className="w-3 h-3 animate-spin inline" />
+                                      ) : (
+                                        (
+                                          balances[
+                                            rightToken.contractAddress
+                                          ] ?? 0
+                                        ).toFixed(4)
+                                      )}
+                                    </div>
+                                    <Input
+                                      type="number"
+                                      min={0}
+                                      max={
+                                        balances[rightToken.contractAddress] ??
+                                        0
+                                      }
+                                      value={
+                                        sellAmounts[
+                                          rightToken.contractAddress
+                                        ] ?? 0
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(
+                                          rightToken.contractAddress,
+                                          e.target.value
+                                        )
+                                      }
+                                      disabled={isLoadingBalances || isSelling}
+                                      className="mt-2 h-8 text-sm"
+                                      placeholder="Amount to sell"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      }
+                    )}
+                  </TableBody>
+                </Table>
               </div>
 
-              {/* Progress Section */}
-              {transferProgress > 0 && (
-                <div className="space-y-4">
-                  <div className="flex justify-between text-sm">
-                    <span>Transfer Progress</span>
-                    <span>{Math.round(transferProgress)}%</span>
-                  </div>
-                  <Progress value={transferProgress} className="h-2" />
-                  <div className="text-sm text-muted-foreground">
-                    Processing token {currentTokenIndex + 1} of {tokens.length}
+              {(transferProgress > 0 || isSelling) && (
+                <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">
+                        {sellPhase === "done" ? "Completed!" : "Progress"}
+                      </span>
+                      {isSelling && sellPhase !== "done" && (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      )}
+                    </div>
+                    <span className="font-mono text-sm">
+                      {Math.round(transferProgress)}%
+                    </span>
                   </div>
 
+                  <Progress
+                    value={transferProgress}
+                    className="h-3 transition-all duration-300"
+                  />
+
+                  {currentProcessingToken && (
+                    <div className="text-sm text-muted-foreground animate-pulse">
+                      {currentProcessingToken.includes("...")
+                        ? currentProcessingToken
+                        : `Processing: ${currentProcessingToken}`}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="p-4">
-                      <div className="text-sm text-muted-foreground">
-                        Successful
+                    <Card className="p-4 border-green-200 bg-green-50/50">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <div className="text-sm text-muted-foreground">
+                          Successful
+                        </div>
                       </div>
                       <div className="text-xl font-bold text-green-600">
                         {transferredTokens.length}
@@ -328,16 +632,20 @@ const Page = () => {
                           <Badge
                             key={t}
                             variant="secondary"
-                            className="text-xs"
+                            className="text-xs bg-green-100 text-green-800"
                           >
                             {t}
                           </Badge>
                         ))}
                       </div>
                     </Card>
-                    <Card className="p-4">
-                      <div className="text-sm text-muted-foreground">
-                        Failed
+
+                    <Card className="p-4 border-red-200 bg-red-50/50">
+                      <div className="flex items-center gap-2">
+                        <XCircle className="w-4 h-4 text-red-600" />
+                        <div className="text-sm text-muted-foreground">
+                          Failed
+                        </div>
                       </div>
                       <div className="text-xl font-bold text-red-600">
                         {failedTokens.length}
