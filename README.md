@@ -1,6 +1,14 @@
 # Token Basket Platform
 
-A modern web application that enables users to invest in a diversified basket of crypto tokens, similar to how Nifty50 works for stocks. The platform is designed to make crypto investing accessible and easy for the general public.
+In India, stock market participation has grown rapidly, with a large portion of investors (over 65%) choosing safer, index-based investments such as the Nifty Fifty. However, the same level of adoption has not yet been seen in the crypto space. Many people remain hesitant to enter due to the volatility, complexity, and technical barriers associated with crypto investing.
+
+This project bridges that gap by creating a crypto token basket, similar to how Nifty Fifty works for stocks, but powered by the Avalanche (AVAX) blockchain. The goal is to provide a safe and accessible entry point into the world of crypto for individuals who are curious but uncertain.
+
+By offering a curated, diversified basket of tokens, users can gain exposure to crypto markets without needing to analyze each asset individually or dive into the complexities of wallets and blockchain infrastructure.
+
+To further simplify adoption, the platform integrates smart wallets. Instead of managing private keys or seed phrases, users can sign up and invest seamlessly using just their Google account, lowering the entry barrier significantly.
+
+This opens up new possibilities for first-time investors—people who previously avoided crypto due to fear or lack of technical know-how can now participate in a familiar, index-style investment model, making crypto investing safer, simpler, and more mainstream.
 
 ## Avalanche (AVAX) Integration
 
