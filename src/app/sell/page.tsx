@@ -250,10 +250,10 @@ const Page = () => {
         });
 
         if (transactionReceipt) {
-          toast.success("✅ AVAX payment sent successfully!");
+          toast.success("AVAX payment sent successfully!");
           setTransferProgress(100);
         } else {
-          toast.error("❌ AVAX payment failed");
+          toast.error("AVAX payment failed");
           setTransferProgress(90);
         }
       } else {

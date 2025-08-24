@@ -10,6 +10,8 @@ import { ConnectButton } from "thirdweb/react";
 import { client, wallets } from "@/app/client";
 import { avalancheFuji } from "thirdweb/chains";
 import Image from "next/image";
+import Link from "next/link";
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,6 +44,17 @@ export default function RootLayout({
                   />
                   <div className="flex items-center gap-4">
                     <ThemeToggle />
+                    <Link href="https://github.com/ananya54321/avax50" target="_blank" rel="noopener noreferrer">
+                      <GitHubIcon 
+                        sx={{ 
+                          fontSize: 30, 
+                          color: 'white',
+                          '&:hover': {
+                            opacity: 0.8
+                          }
+                        }}
+                      />
+                    </Link>
                     <ConnectButton
                       client={client}
                       wallets={wallets}
