@@ -9,7 +9,7 @@ import {
   ShoppingCart, 
   DollarSign, 
   Briefcase,
-  TrendingUp 
+  TrendingUp
 } from 'lucide-react'
 
 const Navbar = () => {
@@ -121,10 +121,27 @@ const Navbar = () => {
       </nav>
 
       {/* Footer */}
-      <div className='p-4 border-t border-gray-700 flex flex-col justify-center items-center gap-4'>
-        Made by:
-        <Link href="https://x.com/AnanyaPappula" target="_blank">@AnanyaPappula</Link>
-        <Link href="https://x.com/mani_yadla_" target="_blank">@mani_yadla_</Link>
+      <div className='p-4 border-t border-gray-700'>
+        <div className='text-center space-y-3'>
+          <div className='text-xs text-gray-500 mb-2'>Made by</div>
+          <div className='space-y-2'>
+            <Link 
+              href="https://x.com/mani_yadla_" 
+              target="_blank"
+              className='block text-sm text-gray-400 hover:text-red-400 transition-colors duration-200'
+            >
+              @mani_yadla_
+            </Link>
+            <Link 
+              href="https://x.com/AnanyaPappula" 
+              target="_blank"
+              className='block text-sm text-gray-400 hover:text-red-400 transition-colors duration-200'
+            >
+              @AnanyaPappula
+            </Link>
+            
+          </div>
+        </div>
       </div>
     </div>
   )
