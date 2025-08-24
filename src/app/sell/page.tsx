@@ -21,8 +21,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   Table,
@@ -382,7 +383,7 @@ const Page = () => {
                 )}
               </Button>
 
-              <div className="flex flex-wrap gap-4 border border-red-500">
+              <div className="flex flex-wrap gap-4 ">
                 {[25, 50, 100].map((p) => (
                   <Button
                     key={p}
@@ -394,17 +395,26 @@ const Page = () => {
                     {p}%
                   </Button>
                 ))}
+                <Button
+                  variant="outline"
+                  disabled={isLoadingBalances || isSelling}
+                  className="transition-all duration-200 bg-transparent"
+                  onAbort={() => setIsDialogOpen(false)}
+                  onClick={() => setIsDialogOpen(true)}
+                >
+                  Custom %
+                </Button>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      disabled={isLoadingBalances || isSelling}
-                      className="transition-all duration-200 bg-transparent"
-                    >
-                      Custom %
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
+                  <DialogContent className="sm:max-w-[425px] p-6">
+                    {/* Close Button */}
+                    <DialogClose asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-4 top-4 rounded-full"
+                      ></Button>
+                    </DialogClose>
+
                     <DialogHeader>
                       <DialogTitle>Custom Percentage</DialogTitle>
                       <DialogDescription>
@@ -431,7 +441,11 @@ const Page = () => {
                       </div>
                     </div>
 
-                    <Button type="submit" onClick={handleCustomPercentage}>
+                    <Button
+                      type="submit"
+                      onClick={handleCustomPercentage}
+                      className="w-full"
+                    >
                       Apply Percentage
                     </Button>
                   </DialogContent>
