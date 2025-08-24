@@ -182,7 +182,7 @@ const Page = () => {
           <div className="flex w-full gap-6">
             <div className="flex-1 bg-card text-card-foreground border border-gray-700 rounded-lg shadow-sm p-6">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold">Buy Token50 Basket</h1>
+              <h1 className="text-2xl font-bold">Buy AVAX50 Basket</h1>
               <p className="text-sm text-muted-foreground mt-1">
                 Exchange AVAX for a diversified basket of 50 tokens
               </p>

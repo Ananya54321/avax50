@@ -61,7 +61,7 @@ export default function Home() {
       <section className="w-[80%] mx-auto px-4 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-4">
-            Why Choose Token50?
+            Why Choose AVAX50?
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             {`The smartest way to invest in Avalanche's ecosystem with our curated
@@ -187,7 +187,7 @@ export default function Home() {
         <div className="relative h-[500px] overflow-hidden">
           <Image
             src="/footer.jpg"
-            alt="Token50 Footer"
+            alt="AVAX50 Footer"
             fill
             className="object-cover"
           />
@@ -216,7 +216,7 @@ export default function Home() {
               </div>
 
               <div className="text-xs text-gray-500">
-                © 2025 Token50. All rights reserved.
+                © 2025 AVAX50. All rights reserved.
               </div>
             </div>
           </div>
