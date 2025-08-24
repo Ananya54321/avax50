@@ -10,6 +10,10 @@ To further simplify adoption, the platform integrates smart wallets. Instead of 
 
 This opens up new possibilities for first-time investors—people who previously avoided crypto due to fear or lack of technical know-how can now participate in a familiar, index-style investment model, making crypto investing safer, simpler, and more mainstream.
 
+## Demo
+[▶ Watch Demo Video](https://drive.google.com/file/d/1roQQJJS8vHTh7VrHh-hMZXE0TNcayB1p/view?usp=sharing)
+
+
 ## Avalanche (AVAX) Integration
 
 This platform leverages the Avalanche (AVAX) blockchain for fast, low-cost, and secure transactions. AVAX is chosen for its scalability, eco-friendly consensus, and robust ecosystem, making it ideal for tokenized investment products.
