@@ -11,7 +11,6 @@ import { client, wallets } from "@/app/client";
 import { avalancheFuji } from "thirdweb/chains";
 import Image from "next/image";
 
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -35,20 +34,15 @@ export default function RootLayout({
               <div className="h-full flex flex-col">
                 <div className="bg-black border-b border-gray-700 flex justify-between items-center p-4 flex-shrink-0">
                   {/* <div className="text-white pl-2 titlefont text-3xl">AVAX50</div> */}
-                  <Image
-                    src="/logo.png"
-                    alt="Logo"
-                    width={130}
-                    height={130}
-                  />
+                  <Image src="/logo.png" alt="Logo" width={130} height={130} />
                   <div className="flex items-center gap-4">
-                     <ThemeToggle />
-                  <ConnectButton 
-                    client={client}
-                    wallets={wallets}
-                    chain={avalancheFuji}
+                    <ThemeToggle />
+                    <ConnectButton
+                      client={client}
+                      wallets={wallets}
+                      chain={avalancheFuji}
                     />
-                    </div>
+                  </div>
                 </div>
                 <Toaster />
                 <div className="flex flex-1 min-h-0">
