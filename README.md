@@ -1,4 +1,4 @@
-# Token Basket Platform
+# AVAX50 - Token Basket Platform
 
 In India, stock market participation has grown rapidly, with a large portion of investors (over 65%) choosing safer, index-based investments such as the Nifty Fifty. However, the same level of adoption has not yet been seen in the crypto space. Many people remain hesitant to enter due to the volatility, complexity, and technical barriers associated with crypto investing.
 
