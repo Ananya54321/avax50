@@ -31,7 +31,7 @@ const Page = () => {
   const [avaxPrice, setAvaxPrice] = useState(0);
   const [usdAmount, setUsdAmount] = useState(0);
   const [avaxAmount, setAvaxAmount] = useState(0);
-  const chainId = 43113; // Avalanche Fuji
+  const chainId = 43113; 
   const [transferProgress, setTransferProgress] = useState(0);
   const [currentTokenIndex, setCurrentTokenIndex] = useState(0);
   const [transferredTokens, setTransferredTokens] = useState<string[]>([]);
@@ -102,7 +102,6 @@ const Page = () => {
       });
       if (!transactionReceipt) throw new Error("AVAX payment failed");
 
-      // Wallet to send tokens (server key)
       const wallet = privateKeyToAccount({
         client,
         privateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY!,
@@ -140,7 +139,6 @@ const Page = () => {
             account: wallet,
           });
 
-          // Add successful transaction to the list (prepend to show newest first)
           const newTransaction: Transaction = {
             id: `${Date.now()}-${i}`,
             tokenSymbol: token.symbol,
@@ -345,7 +343,6 @@ const Page = () => {
                 </div>
               )}     
 
-          {/* Transaction History Table */}
           <TransactionHistory transactions={transactions} />
         </div>
         

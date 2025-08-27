@@ -8,10 +8,8 @@ import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-800 to-zinc-900">
-      {/* Hero Section */}
       <section>
         <div className="relative h-[600px] lg:h-[700px] overflow-hidden">
-          {/* Background Image */}
           <Image
             src="/hero.png"
             alt="Nifty Fifty - Avalanche Token Basket"
@@ -19,20 +17,18 @@ export default function Home() {
             className="object-cover"
             priority
           />
-          {/* Dark Overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 from-95% to-zinc-800 to-100%"></div>
 
-          {/* Content Overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center space-y-8 max-w-4xl mx-auto px-6">
-              <h1 className="text-5xl sm:text-7xl font-black text-white tracking-wider wordspacing titlefont">
+            <div className="text-center space-y-6 md:space-y-8 max-w-4xl mx-auto px-6">
+              <h1 className="text-4xl md:text-7xl font-black text-white tracking-wider md:wordspacing titlefont">
                 INVEST IN THE TOP 50
                 <br />
-                <span className="text-gray-200 tracking-wider wordspacing">
+                <span className="text-gray-200 tracking-wider md:wordspacing">
                   AVALANCHE TOKENS
                 </span>
               </h1>
-              <p className="text-3xl font-header text-gray-100 max-w-2xl mx-auto">
+              <p className="text-xl md:text-3xl font-header text-gray-100 max-w-2xl mx-auto">
                 One click. One basket. Fifty of the best performing tokens in
                 the Avalanche ecosystem.
               </p>
@@ -57,7 +53,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section with Bento Grid */}
       <section className="w-[80%] mx-auto px-4 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-4">
@@ -182,7 +177,6 @@ export default function Home() {
         </BentoGrid>
       </section>
 
-      {/* Footer Section with CTA */}
       <footer className="relative mt-16">
         <div className="relative h-[500px] overflow-hidden">
           <Image
@@ -191,10 +185,8 @@ export default function Home() {
             fill
             className="object-cover"
           />
-          {/* Dark Overlay */}
           <div className="absolute inset-0 bg-black/60" />
 
-          {/* CTA Content Overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white max-w-4xl mx-auto px-6">
               <h2 className="text-4xl font-bold mb-4">

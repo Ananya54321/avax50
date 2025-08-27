@@ -12,12 +12,12 @@ export function ThemeToggle() {
       variant="outline"
       size="sm"
       onClick={toggleTheme}
-      className="h-9 w-9 p-0"
+      className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 p-0 flex-shrink-0"
     >
       {theme === 'dark' ? (
-        <Sun className="h-4 w-4" />
+        <Sun className="h-3 w-3 sm:h-4 sm:w-4" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
       )}
     </Button>
   )

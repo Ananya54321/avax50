@@ -33,12 +33,10 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(defaultTheme)
 
   useEffect(() => {
-    // Check localStorage for saved theme preference
     const savedTheme = localStorage.getItem(storageKey) as Theme
     if (savedTheme) {
       setTheme(savedTheme)
     } else {
-      // Check system preference
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       setTheme(systemPrefersDark ? 'dark' : 'light')
     }
@@ -47,13 +45,10 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement
     
-    // Remove previous theme classes
     root.classList.remove('light', 'dark')
     
-    // Add current theme class
     root.classList.add(theme)
     
-    // Save to localStorage
     localStorage.setItem(storageKey, theme)
   }, [theme, storageKey])
 

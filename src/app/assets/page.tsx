@@ -59,7 +59,7 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-foreground">
+    <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 py-6">
         <TokenStats />
 
@@ -77,7 +77,7 @@ export default function Page() {
             {[
               { key: "marketCap", label: "Market Cap" },
               { key: "price", label: "Price" },
-              { key: "change", label: "24h Change" },
+              { key: "change", label: "Percentage" },
               { key: "name", label: "Name" },
             ].map((option) => (
               <button
@@ -86,7 +86,7 @@ export default function Page() {
                 className={`px-3 py-2 rounded-base border-2 border-border font-base text-sm transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none ${
                   sortBy === option.key
                     ? "bg-main text-main-foreground shadow-shadow"
-                    : "bg-secondary-background text-foreground shadow-shadow"
+                    : "bg-secondary-background text-white shadow-shadow"
                 }`}
               >
                 {option.label}
@@ -100,15 +100,13 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Results Count */}
         <div className="mb-6">
-          <p className="text-foreground/70">
+          <p className="text-white/70">
             Showing {filteredAndSortedTokens.length} of {tokens.length} tokens
           </p>
         </div>
 
-        {/* Token Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
           {filteredAndSortedTokens.map((token) => (
             <ImageCard
               key={token.contractAddress}
@@ -130,14 +128,13 @@ export default function Page() {
           ))}
         </div>
 
-        {/* No Results */}
         {filteredAndSortedTokens.length === 0 && (
           <div className="text-center py-12">
             <div className="bg-secondary-background border-4 border-border rounded-base shadow-shadow p-8 max-w-md mx-auto">
-              <h3 className="font-heading text-xl text-foreground mb-2">
+              <h3 className="font-heading text-xl text-white mb-2">
                 No tokens found
               </h3>
-              <p className="text-foreground/70">
+              <p className="text-white/70">
                 Try adjusting your search terms or clear the search to see all
                 tokens.
               </p>

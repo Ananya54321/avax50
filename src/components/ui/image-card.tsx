@@ -39,7 +39,6 @@ export default function ImageCard({
     }
   }
 
-  // Reset loading state when imageUrl changes
   useEffect(() => {
     setImageLoaded(false)
     setImageError(false)
@@ -53,9 +52,7 @@ export default function ImageCard({
     className,
   )}
 >
-      {/* Image Container with Loading State */}
       <div className="relative aspect-square overflow-hidden bg-black">
-        {/* Grid Pattern Background - always visible */}
         <GridPattern
           className="absolute inset-0 text-blue-400/60 z-0"
           width={24}
@@ -85,18 +82,15 @@ export default function ImageCard({
           priority={false}
         />
         
-        {/* Overlay gradient for better text readability */}
         <div className="absolute inset-0 z-30 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
       </div>
       
-      {/* Header with token name */}
       <div className=" bg-black p-4">
         <h3 className="font-heading text-lg text-white line-clamp-1">
           {caption}
         </h3>
       </div>
       
-      {/* Content area */}
       {children && (
         <div className="bg-black p-4">
           {children}

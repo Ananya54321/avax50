@@ -39,7 +39,7 @@ export default function TokenInfo({
     try {
       await navigator.clipboard.writeText(contractAddress)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000) // Reset after 2 seconds
+      setTimeout(() => setCopied(false), 2000)  
     } catch (err) {
       console.error('Failed to copy: ', err)
     }
@@ -71,17 +71,15 @@ export default function TokenInfo({
   return (
     <>
       <div className="space-y-3">
-        {/* Primary Info - Always Visible */}
         <div className="space-y-2">
-          {/* Symbol and Price */}
           <div className="flex items-center justify-between">
             <span className={cn(
               "font-base text-lg px-2 py-1 rounded-base border-1 border-gray-700",
               isPositive 
-                ? "bg-green-100 text-green-800 border-green-300" 
+                ? " text-green-400 border-gray-700" 
                 : "bg-red-100 text-red-800 border-red-300"
             )}>
-              {isPositive ? "+" : ""}{percentage}%
+              {percentage}%
             </span>
             <span className="font-heading text-lg text-white">
               ${priceUsd.toFixed(4)}
@@ -89,7 +87,6 @@ export default function TokenInfo({
           </div>
         </div>
 
-        {/* View Details Button */}
         <button 
           onClick={() => setIsModalOpen(true)}
           className="w-full buttonfont py-2 px-3 text-lg text-black font-base bg-white border-1 border-gray-700 rounded-base"
@@ -98,25 +95,23 @@ export default function TokenInfo({
         </button>
       </div>
 
-      {/* Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="border border-gray-700 bg-black w-[90vw] max-w-4xl min-w-[60vw]">
+        <DialogContent className="border border-gray-700 bg-black w-[95vw] max-w-4xl sm:w-[90vw] sm:max-w-3xl overflow-y-auto max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle className="text-2xl">{tokenName} ({symbol})</DialogTitle>
+            <DialogTitle className="text-xl sm:text-2xl">{tokenName} ({symbol})</DialogTitle>
           </DialogHeader>
           
-          <div className="p-6 pt-0">
-            {/* Main Content Layout - Token Image + Information Side by Side */}
-            <div className="flex gap-6 mb-6">
-              {/* Token Image - Left Side */}
-              <div className="flex-shrink-0">
-                <div className="bg-secondary-background border-2 border-gray-700 rounded-base p-4">
+          <div className="p-3 sm:p-6 pt-0">
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 mb-4 lg:mb-6">
+              <div className="flex-shrink-0 self-center lg:self-start">
+                <div className="bg-secondary-background border-2 border-gray-700 rounded-base p-3 sm:p-4">
                   <Image
                     src={imageUrl}
                     alt={tokenName}
                     className="object-cover rounded-base"
-                    width={200}
-                    height={200}
+                    width={150}
+                    height={150}
+                    style={{ width: '150px', height: '150px' }}
                     onError={(e) => {
                       e.currentTarget.src = "/favicon.ico";
                     }}
@@ -124,17 +119,15 @@ export default function TokenInfo({
                 </div>
               </div>
 
-              {/* Token Information - Right Side */}
-              <div className="flex-1 flex flex-col space-y-4">
-                {/* Price Information */}
-                <div className="bg-secondary-background flex flex-col border-2 border-gray-700 rounded-base p-4">
-                  <h4 className="font-heading text-lg text-white mb-3">Price Information</h4>
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex justify-between text-lg">
+              <div className="flex-1 flex flex-col space-y-3 lg:space-y-4">
+                <div className="bg-secondary-background flex flex-col border-2 border-gray-700 rounded-base p-3 sm:p-4">
+                  <h4 className="font-heading text-base sm:text-lg text-white mb-2 sm:mb-3">Price Information</h4>
+                  <div className="grid grid-cols-1 gap-2 sm:gap-4">
+                    <div className="flex justify-between text-sm sm:text-lg">
                       <span className="text-white/70">Current Price:</span>
                       <span className="font-base text-white">${priceUsd.toFixed(6)}</span>
                     </div>
-                    <div className="flex justify-between text-lg">
+                    <div className="flex justify-between text-sm sm:text-lg">
                       <span className="text-white/70">Percentage:</span>
                       <span className={cn(
                         "font-base",
@@ -146,15 +139,14 @@ export default function TokenInfo({
                   </div>
                 </div>
 
-                {/* Market Information */}
-                <div className="bg-secondary-background flex flex-col border-2 border-gray-700 rounded-base p-4">
-                  <h4 className="font-heading text-lg text-white mb-3">Market Information</h4>
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex justify-between text-lg">
+                <div className="bg-secondary-background flex flex-col border-2 border-gray-700 rounded-base p-3 sm:p-4">
+                  <h4 className="font-heading text-base sm:text-lg text-white mb-2 sm:mb-3">Market Information</h4>
+                  <div className="grid grid-cols-1 gap-2 sm:gap-4">
+                    <div className="flex justify-between text-sm sm:text-lg">
                       <span className="text-white/70">Market Cap:</span>
                       <span className="font-base text-white">{formatNumber(marketCapUsd)}</span>
                     </div>
-                    <div className="flex justify-between text-lg">
+                    <div className="flex justify-between text-sm sm:text-lg">
                       <span className="text-white/70">Total Supply:</span>
                       <span className="font-base text-white">{formatSupply(supply)}</span>
                     </div>
@@ -165,21 +157,19 @@ export default function TokenInfo({
 
 
 
-            {/* Contract Information - Full Width */}
-            <div className="bg-secondary-background border-2 border-gray-700 rounded-base p-4 mb-4">
+            <div className="bg-secondary-background border-2 border-gray-700 rounded-base p-3 sm:p-4 mb-3 sm:mb-4">
                 <div>
-                  <span className="text-white text-lg block mb-1">Contract Address:</span>
-                  <div className="flex items-center gap-2">
-                    <code className="text-xs font-mono text-main-foreground px-2 py-1 rounded border border-gray-700 break-all flex-1">
+                  <span className="text-white text-sm sm:text-lg block mb-2">Contract Address:</span>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <code className="text-xs sm:text-sm font-mono text-main-foreground px-2 py-1 rounded border border-gray-700 break-all flex-1 w-full sm:w-auto">
                       {contractAddress}
                     </code>
                     <button
                       onClick={copyToClipboard}
-                      className="flex items-center justify-center p-2 bg-white hover:bg-gray-100 border-1 border-gray-700 rounded transition-colors duration-200"
+                      className="flex items-center justify-center p-2 bg-white hover:bg-gray-100 border-1 border-gray-700 rounded transition-colors duration-200 self-start sm:self-auto flex-shrink-0"
                       title={copied ? "Copied!" : "Copy to clipboard"}
                     >
                       {copied ? (
-                        // Check icon
                         <svg 
                           className="w-4 h-4 text-green-600" 
                           fill="none" 
@@ -194,7 +184,6 @@ export default function TokenInfo({
                           />
                         </svg>
                       ) : (
-                        // Copy icon
                         <svg 
                           className="w-4 h-4 text-gray-700" 
                           fill="none" 
@@ -214,11 +203,10 @@ export default function TokenInfo({
                 </div>
             </div>
 
-            {/* Close Button */}
             <div className="flex justify-end">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-white font-bold text-black border-1 border-gray-700 rounded-base text-lg"
+                className="px-3 sm:px-4 py-2 bg-white font-bold text-black border-1 border-gray-700 rounded-base text-sm sm:text-lg"
               >
                 Close
               </button>

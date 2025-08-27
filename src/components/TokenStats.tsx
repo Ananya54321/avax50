@@ -20,28 +20,28 @@ export default function TokenStats() {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <div className="border border-gray-700 p-4 text-center">
-        <h3 className="font-heading text-lg text-white/70 mb-1">Total Market Cap</h3>
-        <p className="font-heading text-2xl text-white">{formatMarketCap(totalMarketCap)}</p>
+        <h3 className="font-heading text-base md:text-lg text-white/70 mb-1">Total Market Cap</h3>
+        <p className="font-heading text-lg md:text-2xl text-white">{formatMarketCap(totalMarketCap)}</p>
       </div>
       
       <div className="border border-gray-700 p-4 text-center">
-        <h3 className="font-heading text-lg text-white/70 mb-1">Average Price</h3>
-        <p className="font-heading text-2xl text-white">${averagePrice.toFixed(4)}</p>
+        <h3 className="font-heading text-base md:text-lg text-white/70 mb-1">Average Price</h3>
+        <p className="font-heading text-lg md:text-2xl text-white">${averagePrice.toFixed(4)}</p>
       </div>
       
       <div className="border border-gray-700 p-4 text-center">
-        <h3 className="font-heading text-lg text-white/70 mb-1">Top Gainer</h3>
+        <h3 className="font-heading text-base md:text-lg text-white/70 mb-1">Top Gainer</h3>
         <div className="flex gap-3 justify-center items-center">
-          <p className="font-heading text-2xl text-white line-clamp-1">{topGainer.tokenName}</p>
-          <p className="font-bold text-2xl text-green-600">+{topGainer.percentage}%</p>
+          <p className="font-heading text-lg md:text-2xl text-white line-clamp-1">{topGainer.tokenName}</p>
+          <p className="font-bold text-lg md:text-2xl text-green-600">+{topGainer.percentage}%</p>
         </div>
       </div>
       
       <div className="border border-gray-700 p-4 text-center">
-        <h3 className="font-heading text-lg text-white/70 mb-1">Biggest Drop</h3>
+        <h3 className="font-heading text-base md:text-lg text-white/70 mb-1">Biggest Drop</h3>
         <div className="flex gap-3 justify-center items-center">
-        <p className="font-heading text-2xl text-white line-clamp-1">{topLoser.tokenName}</p>
-        <p className="font-bold text-2xl text-red-600">{topLoser.percentage}%</p>
+        <p className="font-heading text-lg md:text-2xl text-white line-clamp-1">{topLoser.tokenName}</p>
+        <p className="font-bold text-lg md:text-2xl text-red-600">{topLoser.percentage}%</p>
         </div>
       </div>
     </div>

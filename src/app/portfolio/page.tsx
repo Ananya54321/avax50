@@ -79,7 +79,6 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-black text-foreground">
       <div className="container mx-auto px-4 py-6">
-        {/* Portfolio Stats */}
         <div className="bg-secondary-background border-1 border-gray-700 rounded-base p-6 mb-8">
           <h2 className="font-heading text-2xl text-foreground mb-2">
             Portfolio Balance
@@ -89,7 +88,6 @@ export default function PortfolioPage() {
           </p>
         </div>
 
-        {/* Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
             <Input
@@ -101,7 +99,6 @@ export default function PortfolioPage() {
           </div>
         </div>
 
-        {/* Tokens Table */}
         <div className="overflow-x-auto rounded-lg border border-border shadow">
           <table className="w-full border-collapse">
             <thead className="bg-secondary-background">
@@ -122,7 +119,6 @@ export default function PortfolioPage() {
                       key={token.contractAddress}
                       className="border-t border-border hover:bg-secondary-background/50 transition"
                     >
-                      {/* Token Image + Name */}
                       <td className="px-4 py-3 flex items-center gap-3">
                         <Image
                           src={token.url}
@@ -139,7 +135,6 @@ export default function PortfolioPage() {
                         </div>
                       </td>
 
-                      {/* Balance */}
                       <td className="px-4 py-3 text-right font-mono">
                         {balance.toLocaleString(undefined, {
                           maximumFractionDigits: 4,
@@ -147,7 +142,6 @@ export default function PortfolioPage() {
                         {token.symbol}
                       </td>
 
-                      {/* Price */}
                       <td className="px-4 py-3 text-right">
                         $
                         {token.priceUsd.toLocaleString(undefined, {
@@ -155,7 +149,6 @@ export default function PortfolioPage() {
                         })}
                       </td>
 
-                      {/* USD Value */}
                       <td className="px-4 py-3 text-right font-semibold text-main">
                         $
                         {(balance * token.priceUsd).toLocaleString(undefined, {
@@ -169,7 +162,6 @@ export default function PortfolioPage() {
           </table>
         </div>
 
-        {/* Empty State */}
         {filteredTokens.filter((t) => (balances[t.contractAddress] || 0) > 0)
           .length === 0 && (
           <div className="text-center py-12">

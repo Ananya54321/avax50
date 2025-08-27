@@ -210,7 +210,7 @@ const Page = () => {
 
         preparedTxs.push(transaction);
         setTransferredTokens((prev) => [...prev, token.symbol]);
-        setTransferProgress(((i + 1) / tokensToProcess.length) * 50); // 50% for preparation
+        setTransferProgress(((i + 1) / tokensToProcess.length) * 50); 
       } catch (err) {
         console.error(`❌ Failed to prepare ${token.symbol}:`, err);
         setFailedTokens((prev) => [...prev, token.symbol]);
@@ -265,7 +265,6 @@ const Page = () => {
         setSellPhase("idle");
         setTransferProgress(0);
         setCurrentProcessingToken("");
-        // Refresh balances after successful sale
         fetchBalances();
       }, 3000);
     } catch (err) {

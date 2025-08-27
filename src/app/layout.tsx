@@ -34,40 +34,56 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <ThirdwebProvider>
               <div className="h-full flex flex-col">
-                <div className="bg-black border-b border-gray-700 flex justify-between items-center p-4 flex-shrink-0">
-                  {/* <div className="text-white pl-2 titlefont text-3xl">AVAX50</div> */}
-                  <Image
-                    src="/logo.png"
-                    alt="Logo"
-                    width={130}
-                    height={130}
-                  />
-                  <div className="flex items-center gap-4">
-                    <ThemeToggle />
+                <div className="bg-black border-b border-gray-700 flex justify-between items-center p-2 sm:p-4 flex-shrink-0">
+                  <div className="flex-shrink-0 ml-8 md:ml-0">
+                    <Image 
+                      src="/logo.png"
+                      alt="Logo"
+                      width={80}
+                      height={80}
+                      className="w-[80px] h-[30px] md:w-[120px] md:h-[120px] lg:w-[130px] lg:h-[40px] object-contain"
+                    />
+                  </div>
+                  
+                  <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+                    <div className="flex-shrink-0">
+                      <ThemeToggle />
+                    </div>
+                    
                     <Link href="https://github.com/ananya54321/avax50" target="_blank" rel="noopener noreferrer">
                       <GitHubIcon 
                         sx={{ 
-                          fontSize: 30, 
+                          fontSize: { xs: 20, sm: 24, md: 30 }, 
                           color: 'white',
                           '&:hover': {
                             opacity: 0.8
                           }
                         }}
                       />
-                    </Link>
-                    <ConnectButton
-                      client={client}
-                      wallets={wallets}
-                      chain={avalancheFuji}
-                    />
+                    </Link> 
+                    
+                    <div className="flex-shrink-0">
+                      <ConnectButton
+                        client={client}
+                        wallets={wallets}
+                        chain={avalancheFuji}
+                      /> 
+                    </div>
                   </div>
                 </div>
                 <Toaster />
-                <div className="flex flex-1 min-h-0">
-                  <div className="w-[15%] flex-shrink-0">
+                <div className="flex flex-1 min-h-0 relative">
+                  <div className="hidden md:block md:w-[15%] flex-shrink-0">
                     <Navbar />
                   </div>
-                  <div className="w-[85%] overflow-y-auto">{children}</div>
+                  
+                  <div className="w-full md:w-[85%] overflow-y-auto">
+                    {children}
+                  </div>
+                </div>
+                
+                <div className="md:hidden">
+                  <Navbar />
                 </div>
               </div>
             </ThirdwebProvider>
