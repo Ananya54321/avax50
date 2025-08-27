@@ -9,7 +9,6 @@ import { ThirdwebProvider, useActiveAccount } from "thirdweb/react";
 import { prepareTransaction } from "thirdweb";
 import { sendAndConfirmTransaction } from "thirdweb";
 import { useWalletBalance } from "thirdweb/react";
-// Removed Card imports - using custom styled divs instead
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
