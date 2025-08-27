@@ -49,7 +49,7 @@ export default function ImageCard({
   return (
     <article
   className={cn(
-    "group relative w-full max-w-sm overflow-hidden rounded-sm border border-gray-700 bg-white font-base shadow-[5px_0_0_0_rgba(120,0,0,1),0_7px_0_0_rgba(150,0,0,1)] transition-all duration-200 hover:translate-x-1 hover:translate-y-1 hover:shadow-none",
+    "group relative w-full max-w-sm overflow-hidden rounded-sm border border-gray-700 bg-white font-base shadow-[2px_0_0_0_rgba(120,0,0,1),0_3px_0_0_rgba(150,0,0,1)] transition-all duration-200 hover:translate-x-1 hover:translate-y-1 hover:shadow-none",
     className,
   )}
 >
@@ -72,7 +72,7 @@ export default function ImageCard({
 
         <Image
           className={cn(
-            "relative z-20 h-[80%] w-[80%] mx-auto mt-6 transition-all duration-300",
+            "relative z-20 h-[80%] w-[80%] mx-auto mt-6 rounded-full transition-all duration-300",
             imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-110",
             "group-hover:scale-105"
           )}

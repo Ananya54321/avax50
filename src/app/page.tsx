@@ -25,10 +25,10 @@ export default function Home() {
           {/* Content Overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center space-y-8 max-w-4xl mx-auto px-6">
-              <h1 className="text-5xl sm:text-7xl font-black text-white tracking-wide wordspacing titlefont">
+              <h1 className="text-5xl sm:text-7xl font-black text-white tracking-wider wordspacing titlefont">
                 INVEST IN THE TOP 50
                 <br />
-                <span className="text-gray-200 tracking-wide wordspacing">
+                <span className="text-gray-200 tracking-wider wordspacing">
                   AVALANCHE TOKENS
                 </span>
               </h1>
